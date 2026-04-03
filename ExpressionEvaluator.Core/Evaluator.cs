@@ -8,102 +8,123 @@ public class Evaluator
         return EvaluatePostfix(postfix);
     }
 
-    private static string InfixToPostfix(string infix)
+    private static List<string> GetParts(string infix)
     {
-        var postFix = string.Empty;
-        var stack = new Stack<char>();
-        foreach (var item in infix)
+        var parts = new List<string>();
+        var number = string.Empty;
+
+        foreach (var c in infix)
         {
-            if (IsOperator(item))
+            if (char.IsDigit(c) || c == '.')
             {
-                if (stack.Count == 0)
-                {
-                    stack.Push(item);
-                }
-                else
-                {
-                    if (item == ')')
-                    {
-                        do
-                        {
-                            postFix += stack.Pop();
-                        } while (stack.Peek() != '(');
-                        stack.Pop();
-                    }
-                    else
-                    {
-                        if (PriorityInfix(item) > PriorityStack(stack.Peek()))
-                        {
-                            stack.Push(item);
-                        }
-                        else
-                        {
-                            postFix += stack.Pop();
-                            stack.Push(item);
-                        }
-                    }
-                }
+                number += c;
             }
             else
             {
-                postFix += item;
+                if (!string.IsNullOrEmpty(number))
+                {
+                    parts.Add(number);
+                    number = string.Empty;
+                }
+                if ("+-*/^()".Contains(c))
+                    parts.Add(c.ToString());
             }
         }
-        while (stack.Count > 0)
-        {
-            postFix += stack.Pop();
-        }
-        return postFix;
+
+        if (!string.IsNullOrEmpty(number))
+            parts.Add(number);
+
+        return parts;
     }
 
-    private static int PriorityStack(char item) => item switch
+    private static string InfixToPostfix(string infix)
     {
-        '^' => 3,
-        '*' => 2,
-        '/' => 2,
-        '+' => 1,
-        '-' => 1,
-        '(' => 0,
-        _ => throw new Exception("Sintax error."),
-    };
+        var postFix = string.Empty;
+        var stack = new Stack<string>();
+        var parts = GetParts(infix);
 
-    private static int PriorityInfix(char item) => item switch
-    {
-        '^' => 4,
-        '*' => 2,
-        '/' => 2,
-        '+' => 1,
-        '-' => 1,
-        '(' => 5,
-        _ => throw new Exception("Sintax error."),
-    };
+        foreach (var part in parts)
+        {
+            if (double.TryParse(part, System.Globalization.NumberStyles.Any,
+                System.Globalization.CultureInfo.InvariantCulture, out _))
+            {
+                postFix += part + " ";
+            }
+            else if (part == "(")
+            {
+                stack.Push(part);
+            }
+            else if (part == ")")
+            {
+                while (stack.Count > 0 && stack.Peek() != "(")
+                    postFix += stack.Pop() + " ";
+                if (stack.Count > 0) stack.Pop();
+            }
+            else if (IsOperator(part))
+            {
+                while (stack.Count > 0 && IsOperator(stack.Peek()) &&
+                       PriorityStack(stack.Peek()) >= PriorityInfix(part))
+                {
+                    postFix += stack.Pop() + " ";
+                }
+                stack.Push(part);
+            }
+        }
+
+        while (stack.Count > 0)
+            postFix += stack.Pop() + " ";
+
+        return postFix.Trim();
+    }
 
     private static double EvaluatePostfix(string postfix)
     {
         var stack = new Stack<double>();
-        foreach (char item in postfix)
+        var parts = postfix.Split(' ');
+
+        foreach (var part in parts)
         {
-            if (IsOperator(item))
+            if (double.TryParse(part, System.Globalization.NumberStyles.Any,
+                System.Globalization.CultureInfo.InvariantCulture, out double number))
             {
-                var b = stack.Pop();
-                var a = stack.Pop();
-                stack.Push(item switch
-                {
-                    '+' => a + b,
-                    '-' => a - b,
-                    '*' => a * b,
-                    '/' => a / b,
-                    '^' => Math.Pow(a, b),
-                    _ => throw new Exception("Sintax error."),
-                });
+                stack.Push(number);
             }
             else
             {
-                stack.Push(double.Parse(item.ToString()));
+                var b = stack.Pop();
+                var a = stack.Pop();
+                stack.Push(part switch
+                {
+                    "+" => a + b,
+                    "-" => a - b,
+                    "*" => a * b,
+                    "/" => a / b,
+                    "^" => Math.Pow(a, b),
+                    _ => throw new Exception("Sintax error.")
+                });
             }
         }
+
         return stack.Pop();
     }
 
-    private static bool IsOperator(char item) => "+-*/^()".Contains(item);
+    private static bool IsOperator(string part) =>
+        part == "+" || part == "-" || part == "*" ||
+        part == "/" || part == "^";
+
+    private static int PriorityInfix(string part) => part switch
+    {
+        "^" => 4,
+        "*" or "/" => 2,
+        "+" or "-" => 1,
+        _ => 0
+    };
+
+    private static int PriorityStack(string part) => part switch
+    {
+        "^" => 3,
+        "*" or "/" => 2,
+        "+" or "-" => 1,
+        _ => 0
+    };
 }

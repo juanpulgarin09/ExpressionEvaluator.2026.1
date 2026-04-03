@@ -1,3 +1,5 @@
+using ExpressionEvaluator.Core;
+
 namespace ExpressionEvaluator.UI.Win
 {
     public partial class Form1 : Form
@@ -40,7 +42,7 @@ namespace ExpressionEvaluator.UI.Win
             btn2 = new Button();
             btn3 = new Button();
             btnMinus = new Button();
-            btnCloseParenthesi = new Button();
+            btnCloseParenthesis = new Button();
             btnDivide = new Button();
             btnPlus = new Button();
             btnOpenParenthesis = new Button();
@@ -163,16 +165,16 @@ namespace ExpressionEvaluator.UI.Win
             btnMinus.UseVisualStyleBackColor = false;
             btnMinus.Click += btnMinus_Click;
             // 
-            // btnCloseParenthesi
+            // btnCloseParenthesis
             // 
-            btnCloseParenthesi.BackColor = Color.FromArgb(255, 128, 0);
-            btnCloseParenthesi.Location = new Point(245, 47);
-            btnCloseParenthesi.Name = "btnCloseParenthesi";
-            btnCloseParenthesi.Size = new Size(53, 47);
-            btnCloseParenthesi.TabIndex = 11;
-            btnCloseParenthesi.Text = ")";
-            btnCloseParenthesi.UseVisualStyleBackColor = false;
-            btnCloseParenthesi.Click += button11_Click;
+            btnCloseParenthesis.BackColor = Color.FromArgb(255, 128, 0);
+            btnCloseParenthesis.Location = new Point(245, 47);
+            btnCloseParenthesis.Name = "btnCloseParenthesis";
+            btnCloseParenthesis.Size = new Size(53, 47);
+            btnCloseParenthesis.TabIndex = 11;
+            btnCloseParenthesis.Text = ")";
+            btnCloseParenthesis.UseVisualStyleBackColor = false;
+            btnCloseParenthesis.Click += btnCloseParenthesis_Click;
             // 
             // btnDivide
             // 
@@ -227,7 +229,7 @@ namespace ExpressionEvaluator.UI.Win
             btnPow.TabIndex = 18;
             btnPow.Text = "^";
             btnPow.UseVisualStyleBackColor = false;
-            btnPow.Click += button16_Click;
+            btnPow.Click += btnPow_Click;
             // 
             // btnDelete
             // 
@@ -260,7 +262,7 @@ namespace ExpressionEvaluator.UI.Win
             btnResult.TabIndex = 19;
             btnResult.Text = "=";
             btnResult.UseVisualStyleBackColor = false;
-            btnResult.Click += button19_Click;
+            btnResult.Click += btnResult_Click;
             // 
             // btn0
             // 
@@ -296,7 +298,7 @@ namespace ExpressionEvaluator.UI.Win
             Controls.Add(btnOpenParenthesis);
             Controls.Add(btnMultiply);
             Controls.Add(btnMinus);
-            Controls.Add(btnCloseParenthesi);
+            Controls.Add(btnCloseParenthesis);
             Controls.Add(btnDivide);
             Controls.Add(btn1);
             Controls.Add(btn2);
@@ -332,7 +334,7 @@ namespace ExpressionEvaluator.UI.Win
         private Button btn2;
         private Button btn3;
         private Button btnMinus;
-        private Button btnCloseParenthesi;
+        private Button btnCloseParenthesis;
         private Button btnDivide;
         private Button btnPlus;
         private Button btnOpenParenthesis;
@@ -348,21 +350,6 @@ namespace ExpressionEvaluator.UI.Win
         private void Form1_Load_1(object sender, EventArgs e)
         {
 
-        }
-
-        private void button11_Click(object sender, EventArgs e)
-        {
-            txtDisplay.Text += ")";
-        }
-
-        private void button16_Click(object sender, EventArgs e)
-        {
-            txtDisplay.Text += "^";
-        }
-
-        private void button19_Click(object sender, EventArgs e)
-        {
-            txtDisplay.Text += $"={ }";
         }
 
         private void btn7_Click(object sender, EventArgs e)
@@ -453,6 +440,21 @@ namespace ExpressionEvaluator.UI.Win
         private void btnClear_Click(object sender, EventArgs e)
         {
             txtDisplay.Text = string.Empty;
+        }
+
+        private void btnCloseParenthesis_Click(object sender, EventArgs e)
+        {
+            txtDisplay.Text += ")";
+        }
+
+        private void btnPow_Click(object sender, EventArgs e)
+        {
+            txtDisplay.Text += "^";
+        }
+
+        private void btnResult_Click(object sender, EventArgs e)
+        {
+            txtDisplay.Text += $"={Evaluator.Evaluate(txtDisplay.Text)}";
         }
     }
 }

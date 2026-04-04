@@ -59,10 +59,12 @@ namespace ExpressionEvaluator.UI.Win
             // 
             txtDisplay.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             txtDisplay.BackColor = Color.Green;
+            txtDisplay.ForeColor = Color.White;
             txtDisplay.Location = new Point(9, 10);
             txtDisplay.Name = "txtDisplay";
             txtDisplay.Size = new Size(375, 31);
             txtDisplay.TabIndex = 0;
+            txtDisplay.TextChanged += txtDisplay_TextChanged;
             // 
             // btn7
             // 
@@ -455,6 +457,11 @@ namespace ExpressionEvaluator.UI.Win
         private void btnResult_Click(object sender, EventArgs e)
         {
             txtDisplay.Text += $"={Evaluator.Evaluate(txtDisplay.Text)}";
+        }
+
+        private void txtDisplay_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
